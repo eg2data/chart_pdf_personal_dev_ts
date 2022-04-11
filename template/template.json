@@ -39,8 +39,7 @@
     "overallISIPoints":{"type":"text","position":{"x":30,"y":257.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
     "overallISIRates":{"type":"text","position":{"x":46,"y":257.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
     "overallISIComments":{"type":"text","position":{"x":14.5,"y":263.25},"width":50,"height":6,"alignment":"left","fontSize":7,"characterSpacing":0,"lineHeight":1.25},
-    "overallCSSPoints":{"type":"text","position":{"x":127,"y":257.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
-    "overallCSSRates":{"type":"text","position":{"x":143,"y":257.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
+
     "overallCSSComments":{"type":"text","position":{"x":112,"y":263.25},"width":50,"height":6,"alignment":"left","fontSize":7,"characterSpacing":0,"lineHeight":1.25}
   },
   {
