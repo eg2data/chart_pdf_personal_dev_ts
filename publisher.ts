@@ -7,7 +7,8 @@ const data_0 =
         pathInfo: {
             reservationNumber: 1110111011,
             centerCode: 111,
-            examDate: "1989-02-17"
+            examDate: "1989-02-17",
+            reportDate: "1989-02-19"
         },
         basicInfo: {
             userName: "test-1",
@@ -33,7 +34,7 @@ const data_0 =
             signalTexts: "자살위험아님",
             points : [12],
             rates: [75],
-            comments: "약간 심한 수준의 우울감을 자주 느낌",
+            comments: "약간 심한 수준의 우울감을 자주 느낌, 약간 심한 수준의 우울감을 자주 느낌",
             requirements: "추가 평가 또는 전문가의 도움이 필요함",
             requirementTexts: "전문도움필요",
             changesByYear: [12],
@@ -44,7 +45,7 @@ const data_0 =
             signalTexts: "자살위험아님",
             points : [12],
             rates: [75],
-            comments: "약간 심한 수준의 우울감을 자주 느낌",
+            comments: "약간 심한 수준의 우울감을 자주 느낌, 약간 심한 수준의 우울감을 자주 느낌",
             requirements: "추가 평가 또는 전문가의 도움이 필요함",
             requirementTexts: "전문도움필요",
             changesByYear: [12],
@@ -55,7 +56,7 @@ const data_0 =
             signalTexts: "자살위험아님",
             points : [12],
             rates: [75],
-            comments: "약간 심한 수준의 우울감을 자주 느낌",
+            comments: "약간 심한 수준의 우울감을 자주 느낌, 약간 심한 수준의 우울감을 자주 느낌",
             requirements: "추가 평가 또는 전문가의 도움이 필요함",
             requirementTexts: "전문도움필요",
             changesByYear: [12],
@@ -66,7 +67,7 @@ const data_0 =
             signalTexts: "자살위험아님",
             points : [12],
             rates: [75],
-            comments: "약간 심한 수준의 우울감을 자주 느낌",
+            comments: "약간 심한 수준의 우울감을 자주 느낌, 약간 심한 수준의 우울감을 자주 느낌",
             requirements: "추가 평가 또는 전문가의 도움이 필요함",
             requirementTexts: "전문도움필요",
             changesByYear: [12],
@@ -77,7 +78,7 @@ const data_0 =
             signalTexts: "자살위험아님",
             points : [12],
             rates: [75],
-            comments: "약간 심한 수준의 우울감을 자주 느낌",
+            comments: "약간 심한 수준의 우울감을 자주 느낌, 약간 심한 수준의 우울감을 자주 느낌",
             requirements: "추가 평가 또는 전문가의 도움이 필요함",
             requirementTexts: "전문도움필요",
             changesByYear: [12],
@@ -88,7 +89,7 @@ const data_0 =
             signalTexts: "자살위험아님",
             points : [12],
             rates: [75],
-            comments: "약간 심한 수준의 우울감을 자주 느낌",
+            comments: "약간 심한 수준의 우울감을 자주 느낌, 약간 심한 수준의 우울감을 자주 느낌",
             requirements: "추가 평가 또는 전문가의 도움이 필요함",
             requirementTexts: "전문도움필요",
             commentDetails: "검사 결과는 자살사고 위험이 없습니다",
@@ -655,13 +656,13 @@ const data = [
 
 
 // Step 1: create connection
-amqp.connect('amqp://localhost', (connectionError, connection) => { // library가 js인 경우의 타입... how?
+amqp.connect('amqp://localhost', (connectionError: any, connection: any) => { // subscriber는 타입을 요구하지 않던데 음... 일단 any 처리
     if(connectionError) {
         throw connectionError;
     }
     // Step 2: create channel
-    connection.createChannel((channelError, channel) => { // library가 js인 경우의 타입... how?
-        if(channelError) {
+    connection.createChannel((channelError: any, channel: any) => { // subscriber는 타입을 요구하지 않던데 음... 일단 any 처리
+        if(connectionError) {
             throw channelError;
         }
         // Step 3: assert queue

@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'chart_pdf_personal_dev_ts',
-      script: './server-register.js',
+      name: 'chart_pdf_personal_dev_v2',
+      script: './server-register.ts',
       exec_interpreter: "./node_modules/.bin/babel-node",
       exec_mode: 'cluster', // fork, cluster mode
       instances: "1", // cluster mode only

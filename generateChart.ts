@@ -1,16 +1,21 @@
 import {ChartJSNodeCanvas} from 'chartjs-node-canvas';
-import ChartDataLabels from 'chartjs-plugin-datalabels'
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import fs from "fs";
 import labelmake from "labelmake";
 import templates from "./template/template.json";
 import {fromPath} from "pdf2pic";
 import makeDir from "make-dir";
 import config from "config";
+import {EventEmitter} from "events";
 import {ChartType, ChartConfiguration, ChartData} from "chart.js";
 import {Template} from "labelmake/dist/types/type";
 
+// fromPath.bulk(-1) forks page numbers of gm process which is 11
+// set max emitter to 20 to avoid leak
+EventEmitter.defaultMaxListeners = 20;
+
 // 한글처리
-const NanumGothic = fs.readFileSync("./template/NanumGothic-Regular.ttf")
+const NanumGothic = fs.readFileSync("./template/NanumGothic-Regular.ttf");
 const font = {
     NanumGothic: {
         data: NanumGothic,
@@ -18,8 +23,7 @@ const font = {
     }
 };
 // ByYear label
-const labelsByYear = [new Date().getFullYear()]
-
+const labelsByYear = [new Date().getFullYear()];
 
 type Data = {
         pathInfo: {
@@ -109,12 +113,11 @@ type Data = {
             requirementTexts: string,
             commentDetails: string,
         },
-    }
-
+    };
 class ScalesDefault {
     constructor(max: number) {
-        this.x.max = max
-    }
+        this.x.max = max;
+    };
     x = {
         grid: {
             drawBorder: false,
@@ -125,7 +128,7 @@ class ScalesDefault {
         },
         min: 0,
         max: 0,
-    }
+    };
     y = {
         grid: {
             drawBorder: false,
@@ -134,12 +137,12 @@ class ScalesDefault {
         ticks: {
             display: false,
         }
-    }
-}
+    };
+};
 class ScalesByYear { // ScalsDefault class를 extend할 순 없을까..?
-    constructor(private max: number) {
-        this.y.max = max
-    }
+    constructor(max: number) {
+        this.y.max = max;
+    };
     x = {
         grid: {
             display: false,
@@ -152,26 +155,22 @@ class ScalesByYear { // ScalsDefault class를 extend할 순 없을까..?
                 weight: "bold",
             },
         },
-    }
+    };
     y = {
-        beginAtZero: true,
         grid: {
             drawBorder: false,
             color: 'white',
         },
         ticks: {
             display: false,
-            beginAtZero: true,
         },
         min: 0,
         max: 0,
-    }
-}
+    };
+};
 class ConfigSignals implements ChartConfiguration {
-    constructor(private input: number[] | number) {
-
-    }
-    type = 'bar' as ChartType
+    constructor(private input: number[] | number) { };
+    type = 'bar' as ChartType;
     data = {
         labels: ['a'],
         datasets: [
@@ -180,8 +179,8 @@ class ConfigSignals implements ChartConfiguration {
                 barPercentage: 0.0,
             }
         ]
-    } as ChartData
-    plugins = [ChartDataLabels]
+    } as ChartData;
+    plugins = [ChartDataLabels];
     options = {
         indexAxis: 'y',
         scales: new ScalesDefault(100),
@@ -208,36 +207,36 @@ class ConfigSignals implements ChartConfiguration {
             },
             legend: {
                 display: false
-            }
-        }
-    } as any
-}
+            },
+        },
+    } as any;
+};
 class ConfigPoints implements ChartConfiguration {
-    constructor(private input: (number | string)[] | number[]) { }
-    type = 'bar' as ChartType
+    constructor(private input: (number | string)[] | number[]) { };
+    type = 'bar' as ChartType;
     data = {
         labels: ['a'],
         datasets: [
             {
-                data: this.input,
+                data: this.input.slice(0,1),
                 barPercentage: 0.0,
             }
         ]
-    } as ChartData
-    plugins = [ChartDataLabels]
+    } as ChartData;
+    plugins = [ChartDataLabels];
     options = {
         indexAxis: 'y',
-        scales: new ScalesDefault(104), // 여기 다르고
+        scales: new ScalesDefault(104),
         plugins: {
             datalabels: {
-                color: ['#FF0000'], // 여기 고정
+                color: ['#FF0000'],
                 backgroundColor: ['#FF0000'],
                 anchor: 'end',
                 align: 'center',
-                borderWidth: this.input.length == 2 ? '' : 15, // 여기 다르고
+                borderWidth: this.input[1] == 0 ? '' : 15,
                 borderRadius: 50,
                 font: {
-                    size: 1, // 여기도 다름
+                    size: 1,
                     weight: 'bold'
                 },
             },
@@ -245,16 +244,16 @@ class ConfigPoints implements ChartConfiguration {
                 display: false
             }
         }
-    } as any
-}
+    } as any;
+};
 class ConfigRateBar implements ChartConfiguration {
-    constructor(private input: number[] | number) { }
+    constructor(private input: number[] | number) { };
     private changeColour(): Array<string> {
         return [
             this.input == -1 ? '' : '#A6D7C3'
         ]
-    }
-    type = 'bar' as ChartType
+    };
+    type = 'bar' as ChartType;
     data = {
         labels: ['a'],
         datasets: [
@@ -264,7 +263,7 @@ class ConfigRateBar implements ChartConfiguration {
                 backgroundColor: this.changeColour()
             }
         ]
-    } as ChartData
+    } as ChartData;
     options = {
         indexAxis: 'y',
         scales: new ScalesDefault(100),
@@ -273,13 +272,13 @@ class ConfigRateBar implements ChartConfiguration {
                 display: false
             }
         }
-    } as any
-}
+    } as any;
+};
 class ConfigByYear implements ChartConfiguration {
     constructor(private input: number[] | number, scales: ScalesByYear) {
-        this.options.scales = scales
-    }
-    type = 'bar' as ChartType
+        this.options.scales = scales;
+    };
+    type = 'bar' as ChartType;
     data = {
         labels: this.input == -1 ? '' : labelsByYear,
         datasets: [
@@ -289,15 +288,31 @@ class ConfigByYear implements ChartConfiguration {
                 backgroundColor: ['#020715'],
             }
         ]
-    } as ChartData
+    } as ChartData;
     options = {
-        scales: new ScalesByYear(0),
+        scales: new ScalesByYear(1),
         plugins: {
             legend: {
                 display: false
             }
         }
-    } as any
+    } as any;
+};
+
+async function saveMessage(message: any): Promise<Data> {
+    const data = JSON.parse(message)
+
+    const centerCode = data.pathInfo.centerCode;
+    const examDate = data.pathInfo.examDate.replace(/-/g, "");
+    const reservationNumber = data.pathInfo.reservationNumber;
+
+    const pdfPath = await makeDir(config.get('PDF_PATH_LOCAL'));
+    const fn = `${pdfPath}/${centerCode}_${examDate}_${reservationNumber}.json`;
+
+    fs.writeFileSync(fn, message, 'utf-8');
+    console.log(`Message saved: ${fn}`);
+
+    return data;
 }
 
 // promise인 string들로 구성된 { } 를 type으로서 어떻게 정의할 수 있을까
@@ -308,45 +323,45 @@ async function generateChart(data: Data) {
     // data null check - 이거 그냥.. 호출하는 함수로 만들어둘까? 호출만하면 걍 만들어지게?
 
     // data가 들어오자마자, null이 있다면 치환해버려
-    const dataSignalsKOSSSF = data.KOSSSF.signals == null ? -1 : data.KOSSSF.signals
-    const dataSignalsPHQ9 = data.PHQ9.signals == null ? -1 : data.PHQ9.signals
-    const dataSignalsGAD7 = data.GAD7.signals == null ? -1 : data.GAD7.signals
-    const dataSignalsADNM4 = data.ADNM4.signals == null ? -1 : data.ADNM4.signals
-    const dataSignalsPCPTSD5 = data.PCPTSD5.signals == null ? -1 : data.PCPTSD5.signals
-    const dataSignalsISI = data.ISI.signals == null ? -1 : data.ISI.signals
-    const dataSignalsCSS = data.CSS.signals == null ? -1 : data.CSS.signals
+    const dataSignalsKOSSSF = data.KOSSSF.signals == null ? -1 : data.KOSSSF.signals;
+    const dataSignalsPHQ9 = data.PHQ9.signals == null ? -1 : data.PHQ9.signals;
+    const dataSignalsGAD7 = data.GAD7.signals == null ? -1 : data.GAD7.signals;
+    const dataSignalsADNM4 = data.ADNM4.signals == null ? -1 : data.ADNM4.signals;
+    const dataSignalsPCPTSD5 = data.PCPTSD5.signals == null ? -1 : data.PCPTSD5.signals;
+    const dataSignalsISI = data.ISI.signals == null ? -1 : data.ISI.signals;
+    const dataSignalsCSS = data.CSS.signals == null ? -1 : data.CSS.signals;
 
-    const dataByYearKOSSSF = data.KOSSSF.changesByYear == null ? -1 : data.KOSSSF.changesByYear
-    const dataByYearPHQ9 = data.PHQ9.changesByYear == null ? -1 : data.PHQ9.changesByYear
-    const dataByYearGAD7 = data.GAD7.changesByYear == null ? -1 : data.GAD7.changesByYear
-    const dataByYearADNM4 = data.ADNM4.changesByYear == null ? -1 : data.ADNM4.changesByYear
-    const dataByYearPCPTSD5 = data.PCPTSD5.changesByYear == null ? -1 : data.PCPTSD5.changesByYear
-    const dataByYearISI = data.ISI.changesByYear == null ? -1 : data.ISI.changesByYear
+    const dataByYearKOSSSF = data.KOSSSF.changesByYear == null ? -1 : data.KOSSSF.changesByYear;
+    const dataByYearPHQ9 = data.PHQ9.changesByYear == null ? -1 : data.PHQ9.changesByYear;
+    const dataByYearGAD7 = data.GAD7.changesByYear == null ? -1 : data.GAD7.changesByYear;
+    const dataByYearADNM4 = data.ADNM4.changesByYear == null ? -1 : data.ADNM4.changesByYear;
+    const dataByYearPCPTSD5 = data.PCPTSD5.changesByYear == null ? -1 : data.PCPTSD5.changesByYear;
+    const dataByYearISI = data.ISI.changesByYear == null ? -1 : data.ISI.changesByYear;
 
-    const dataRatesKOSSSF = data.KOSSSF.rates == null ? -1 : data.KOSSSF.rates
-    const dataRatesPHQ9 = data.PHQ9.rates == null ? -1 : data.PHQ9.rates
-    const dataRatesGAD7 = data.GAD7.rates == null ? -1 : data.GAD7.rates
-    const dataRatesADNM4 = data.ADNM4.rates == null ? -1 : data.ADNM4.rates
-    const dataRatesPCPTSD5 = data.PCPTSD5.rates == null ? -1 : data.PCPTSD5.rates
-    const dataRatesISI = data.ISI.rates == null ? -1 : data.ISI.rates
-    const dataRatesCSS = data.CSS.rates == null ? -1 : data.CSS.rates
+    const dataRatesKOSSSF = data.KOSSSF.rates == null ? -1 : data.KOSSSF.rates;
+    const dataRatesPHQ9 = data.PHQ9.rates == null ? -1 : data.PHQ9.rates;
+    const dataRatesGAD7 = data.GAD7.rates == null ? -1 : data.GAD7.rates;
+    const dataRatesADNM4 = data.ADNM4.rates == null ? -1 : data.ADNM4.rates;
+    const dataRatesPCPTSD5 = data.PCPTSD5.rates == null ? -1 : data.PCPTSD5.rates;
+    const dataRatesISI = data.ISI.rates == null ? -1 : data.ISI.rates;
+    const dataRatesCSS = data.CSS.rates == null ? -1 : data.CSS.rates;
 
-    const dataKosssfCompensation = data.KOSSSF.compensation == null ? [0, '0'] : data.KOSSSF.compensation
-    const dataKosssfJobInstability = data.KOSSSF.jobInstability == null ? [0, '0'] : data.KOSSSF.jobInstability
-    const dataKosssfRequirements = data.KOSSSF.requirements == null ? [0, '0'] : data.KOSSSF.requirements
-    const dataKosssfCulture = data.KOSSSF.culture == null ? [0, '0'] : data.KOSSSF.culture
-    const dataKosssfAutonomy = data.KOSSSF.autonomy == null ? [0, '0'] : data.KOSSSF.autonomy
-    const dataKosssfSystem = data.KOSSSF.system == null ? [0, '0'] : data.KOSSSF.system
-    const dataKosssfRelationship = data.KOSSSF.relationship == null ? [0, '0'] : data.KOSSSF.relationship
+    const dataKosssfCompensation = data.KOSSSF.compensation == null ? [0, '0'] : data.KOSSSF.compensation;
+    const dataKosssfJobInstability = data.KOSSSF.jobInstability == null ? [0, '0'] : data.KOSSSF.jobInstability;
+    const dataKosssfRequirements = data.KOSSSF.requirements == null ? [0, '0'] : data.KOSSSF.requirements;
+    const dataKosssfCulture = data.KOSSSF.culture == null ? [0, '0'] : data.KOSSSF.culture;
+    const dataKosssfAutonomy = data.KOSSSF.autonomy == null ? [0, '0'] : data.KOSSSF.autonomy;
+    const dataKosssfSystem = data.KOSSSF.system == null ? [0, '0'] : data.KOSSSF.system;
+    const dataKosssfRelationship = data.KOSSSF.relationship == null ? [0, '0'] : data.KOSSSF.relationship;
 
-    const dataMeansKOSSSF = data.KOSSSF.means == null ? -1 : data.KOSSSF.means
-    const dataPointsKOSSSF = data.KOSSSF.points == null ? -1 : data.KOSSSF.points
-    const dataPointsPHQ9 = data.PHQ9.points == null ? -1 : data.PHQ9.points
-    const dataPointsGAD7 = data.GAD7.points == null ? -1 : data.GAD7.points
-    const dataPointsADNM4 = data.ADNM4.points == null ? -1 : data.ADNM4.points
-    const dataPointsPCPTSD5 = data.PCPTSD5.points == null ? -1 : data.PCPTSD5.points
-    const dataPointsISI = data.ISI.points == null ? -1 : data.ISI.points
-    const dataPointsCSS = data.CSS.points == null ? -1 : data.CSS.points
+    const dataMeansKOSSSF = data.KOSSSF.means == null ? -1 : data.KOSSSF.means;
+    const dataPointsKOSSSF = data.KOSSSF.points == null ? -1 : data.KOSSSF.points;
+    const dataPointsPHQ9 = data.PHQ9.points == null ? -1 : data.PHQ9.points;
+    const dataPointsGAD7 = data.GAD7.points == null ? -1 : data.GAD7.points;
+    const dataPointsADNM4 = data.ADNM4.points == null ? -1 : data.ADNM4.points;
+    const dataPointsPCPTSD5 = data.PCPTSD5.points == null ? -1 : data.PCPTSD5.points;
+    const dataPointsISI = data.ISI.points == null ? -1 : data.ISI.points;
+    const dataPointsCSS = data.CSS.points == null ? -1 : data.CSS.points;
 
     // canvas
     const canvasSignals = new ChartJSNodeCanvas({width: 240, height: 60});
@@ -355,67 +370,67 @@ async function generateChart(data: Data) {
     const canvasByYear = new ChartJSNodeCanvas({width: 240, height: 120});
 
     // config
-    const configSignalsKOSSSF = new ConfigSignals(dataSignalsKOSSSF)
-    const configSignalsPHQ9 = new ConfigSignals(dataSignalsPHQ9)
-    const configSignalsGAD7 = new ConfigSignals(dataSignalsGAD7)
-    const configSignalsADNM4 = new ConfigSignals(dataSignalsADNM4)
-    const configSignalsPCPTSD5 = new ConfigSignals(dataSignalsPCPTSD5)
-    const configSignalsISI = new ConfigSignals(dataSignalsISI)
-    const configSignalsCSS = new ConfigSignals(dataSignalsCSS)
+    const configSignalsKOSSSF = new ConfigSignals(dataSignalsKOSSSF);
+    const configSignalsPHQ9 = new ConfigSignals(dataSignalsPHQ9);
+    const configSignalsGAD7 = new ConfigSignals(dataSignalsGAD7);
+    const configSignalsADNM4 = new ConfigSignals(dataSignalsADNM4);
+    const configSignalsPCPTSD5 = new ConfigSignals(dataSignalsPCPTSD5);
+    const configSignalsISI = new ConfigSignals(dataSignalsISI);
+    const configSignalsCSS = new ConfigSignals(dataSignalsCSS);
 
-    const configRateBarPHQ9 = new ConfigRateBar(dataRatesPHQ9)
-    const configRateBarGAD7 = new ConfigRateBar(dataRatesGAD7)
-    const configRateBarADNM4 = new ConfigRateBar(dataRatesADNM4)
-    const configRateBarPCPTSD5 = new ConfigRateBar(dataRatesPCPTSD5)
-    const configRateBarISI = new ConfigRateBar(dataRatesISI)
-    const configRateBarCSS = new ConfigRateBar(dataRatesCSS)
+    const configRateBarPHQ9 = new ConfigRateBar(dataRatesPHQ9);
+    const configRateBarGAD7 = new ConfigRateBar(dataRatesGAD7);
+    const configRateBarADNM4 = new ConfigRateBar(dataRatesADNM4);
+    const configRateBarPCPTSD5 = new ConfigRateBar(dataRatesPCPTSD5);
+    const configRateBarISI = new ConfigRateBar(dataRatesISI);
+    const configRateBarCSS = new ConfigRateBar(dataRatesCSS);
 
-    const configPointsCompensation = new ConfigPoints(dataKosssfCompensation)
-    const configPointsJobInstability = new ConfigPoints(dataKosssfJobInstability)
-    const configPointsRequirements = new ConfigPoints(dataKosssfRequirements)
-    const configPointsCulture = new ConfigPoints(dataKosssfCulture)
-    const configPointsAutonomy = new ConfigPoints(dataKosssfAutonomy)
-    const configPointsSystem = new ConfigPoints(dataKosssfSystem)
-    const configPointsRelationship = new ConfigPoints(dataKosssfRelationship)
+    const configPointsCompensation = new ConfigPoints(dataKosssfCompensation);
+    const configPointsJobInstability = new ConfigPoints(dataKosssfJobInstability);
+    const configPointsRequirements = new ConfigPoints(dataKosssfRequirements);
+    const configPointsCulture = new ConfigPoints(dataKosssfCulture);
+    const configPointsAutonomy = new ConfigPoints(dataKosssfAutonomy);
+    const configPointsSystem = new ConfigPoints(dataKosssfSystem);
+    const configPointsRelationship = new ConfigPoints(dataKosssfRelationship);
 
-    const configByYearKOSSSF = new ConfigByYear(dataByYearKOSSSF, new ScalesByYear(96))
-    const configByYearPHQ9 = new ConfigByYear(dataByYearPHQ9, new ScalesByYear(24))
-    const configByYearGAD7 = new ConfigByYear(dataByYearGAD7, new ScalesByYear(20))
-    const configByYearADNM4 = new ConfigByYear(dataByYearADNM4, new ScalesByYear(16))
-    const configByYearPCPTSD5 = new ConfigByYear(dataByYearPCPTSD5, new ScalesByYear(4))
-    const configByYearISI = new ConfigByYear(dataByYearISI, new ScalesByYear(24))
+    const configByYearKOSSSF = new ConfigByYear(dataByYearKOSSSF, new ScalesByYear(96));
+    const configByYearPHQ9 = new ConfigByYear(dataByYearPHQ9, new ScalesByYear(24));
+    const configByYearGAD7 = new ConfigByYear(dataByYearGAD7, new ScalesByYear(20));
+    const configByYearADNM4 = new ConfigByYear(dataByYearADNM4, new ScalesByYear(16));
+    const configByYearPCPTSD5 = new ConfigByYear(dataByYearPCPTSD5, new ScalesByYear(4));
+    const configByYearISI = new ConfigByYear(dataByYearISI, new ScalesByYear(24));
 
 
     // generate charts
-    const chartSignalsKOSSSF = await canvasSignals.renderToDataURL(configSignalsKOSSSF) // 왜 type error가 나지?
-    const chartSignalsPHQ9 = await canvasSignals.renderToDataURL(configSignalsPHQ9)
-    const chartSignalsGAD7 = await canvasSignals.renderToDataURL(configSignalsGAD7)
-    const chartSignalsADNM4 = await canvasSignals.renderToDataURL(configSignalsADNM4)
-    const chartSignalsPCPTSD5 = await canvasSignals.renderToDataURL(configSignalsPCPTSD5)
-    const chartSignalsISI = await canvasSignals.renderToDataURL(configSignalsISI)
-    const chartSignalsCSS = await canvasSignals.renderToDataURL(configSignalsCSS)
+    const chartSignalsKOSSSF = await canvasSignals.renderToDataURL(configSignalsKOSSSF);
+    const chartSignalsPHQ9 = await canvasSignals.renderToDataURL(configSignalsPHQ9);
+    const chartSignalsGAD7 = await canvasSignals.renderToDataURL(configSignalsGAD7);
+    const chartSignalsADNM4 = await canvasSignals.renderToDataURL(configSignalsADNM4);
+    const chartSignalsPCPTSD5 = await canvasSignals.renderToDataURL(configSignalsPCPTSD5);
+    const chartSignalsISI = await canvasSignals.renderToDataURL(configSignalsISI);
+    const chartSignalsCSS = await canvasSignals.renderToDataURL(configSignalsCSS);
 
-    const chartRateBarPHQ9 = await canvasRateBar.renderToDataURL(configRateBarPHQ9)
-    const chartRateBarGAD7 = await canvasRateBar.renderToDataURL(configRateBarGAD7)
-    const chartRateBarADNM4 = await canvasRateBar.renderToDataURL(configRateBarADNM4)
-    const chartRateBarPCPTSD5 = await canvasRateBar.renderToDataURL(configRateBarPCPTSD5)
-    const chartRateBarISI = await canvasRateBar.renderToDataURL(configRateBarISI)
-    const chartRateBarCSS = await canvasRateBar.renderToDataURL(configRateBarCSS)
+    const chartRateBarPHQ9 = await canvasRateBar.renderToDataURL(configRateBarPHQ9);
+    const chartRateBarGAD7 = await canvasRateBar.renderToDataURL(configRateBarGAD7);
+    const chartRateBarADNM4 = await canvasRateBar.renderToDataURL(configRateBarADNM4);
+    const chartRateBarPCPTSD5 = await canvasRateBar.renderToDataURL(configRateBarPCPTSD5);
+    const chartRateBarISI = await canvasRateBar.renderToDataURL(configRateBarISI);
+    const chartRateBarCSS = await canvasRateBar.renderToDataURL(configRateBarCSS);
 
-    const chartPointsCompensation = await canvasPoints.renderToDataURL(configPointsCompensation)
-    const chartPointsJobInstability = await canvasPoints.renderToDataURL(configPointsJobInstability)
-    const chartPointsRequirements = await canvasPoints.renderToDataURL(configPointsRequirements)
-    const chartPointsCulture = await canvasPoints.renderToDataURL(configPointsCulture)
-    const chartPointsAutonomy = await canvasPoints.renderToDataURL(configPointsAutonomy)
-    const chartPointsSystem = await canvasPoints.renderToDataURL(configPointsSystem)
-    const chartPointsRelationship = await canvasPoints.renderToDataURL(configPointsRelationship)
+    const chartPointsCompensation = await canvasPoints.renderToDataURL(configPointsCompensation);
+    const chartPointsJobInstability = await canvasPoints.renderToDataURL(configPointsJobInstability);
+    const chartPointsRequirements = await canvasPoints.renderToDataURL(configPointsRequirements);
+    const chartPointsCulture = await canvasPoints.renderToDataURL(configPointsCulture);
+    const chartPointsAutonomy = await canvasPoints.renderToDataURL(configPointsAutonomy);
+    const chartPointsSystem = await canvasPoints.renderToDataURL(configPointsSystem);
+    const chartPointsRelationship = await canvasPoints.renderToDataURL(configPointsRelationship);
 
-    const chartByYearKOSSSF = await canvasByYear.renderToDataURL(configByYearKOSSSF)
-    const chartByYearPHQ9 = await canvasByYear.renderToDataURL(configByYearPHQ9)
-    const chartByYearGAD7 = await canvasByYear.renderToDataURL(configByYearGAD7)
-    const chartByYearADNM4 = await canvasByYear.renderToDataURL(configByYearADNM4)
-    const chartByYearPCPTSD5 = await canvasByYear.renderToDataURL(configByYearPCPTSD5)
-    const chartByYearISI = await canvasByYear.renderToDataURL(configByYearISI)
+    const chartByYearKOSSSF = await canvasByYear.renderToDataURL(configByYearKOSSSF);
+    const chartByYearPHQ9 = await canvasByYear.renderToDataURL(configByYearPHQ9);
+    const chartByYearGAD7 = await canvasByYear.renderToDataURL(configByYearGAD7);
+    const chartByYearADNM4 = await canvasByYear.renderToDataURL(configByYearADNM4);
+    const chartByYearPCPTSD5 = await canvasByYear.renderToDataURL(configByYearPCPTSD5);
+    const chartByYearISI = await canvasByYear.renderToDataURL(configByYearISI);
 
     // return - 어떻게 줄일 수 있을까 이걸?
     // 일단 변수명 조정부터 => 같으면 하나만 쓰면 되는 거 이용해서. 걍 바로 때린다.
@@ -432,52 +447,49 @@ async function generateChart(data: Data) {
 // generateChart 함수의 return type을 아직 정하지 못해 charts의 type을 any로 일단.
 async function generateFile(data: Data, charts: any) {
     // data null check - 이거 그냥.. 호출하는 함수로 만들어둘까? 호출만하면 걍 만들어지게?
-    const dataSignalsKOSSSF = data.KOSSSF.signals == null ? -1 : data.KOSSSF.signals
-    const dataSignalsPHQ9 = data.PHQ9.signals == null ? -1 : data.PHQ9.signals
-    const dataSignalsGAD7 = data.GAD7.signals == null ? -1 : data.GAD7.signals
-    const dataSignalsADNM4 = data.ADNM4.signals == null ? -1 : data.ADNM4.signals
-    const dataSignalsPCPTSD5 = data.PCPTSD5.signals == null ? -1 : data.PCPTSD5.signals
-    const dataSignalsISI = data.ISI.signals == null ? -1 : data.ISI.signals
-    const dataSignalsCSS = data.CSS.signals == null ? -1 : data.CSS.signals
+    const dataSignalsKOSSSF = data.KOSSSF.signals == null ? -1 : data.KOSSSF.signals;
+    const dataSignalsPHQ9 = data.PHQ9.signals == null ? -1 : data.PHQ9.signals;
+    const dataSignalsGAD7 = data.GAD7.signals == null ? -1 : data.GAD7.signals;
+    const dataSignalsADNM4 = data.ADNM4.signals == null ? -1 : data.ADNM4.signals;
+    const dataSignalsPCPTSD5 = data.PCPTSD5.signals == null ? -1 : data.PCPTSD5.signals;
+    const dataSignalsISI = data.ISI.signals == null ? -1 : data.ISI.signals;
+    const dataSignalsCSS = data.CSS.signals == null ? -1 : data.CSS.signals;
 
-    const dataByYearKOSSSF = data.KOSSSF.changesByYear == null ? -1 : data.KOSSSF.changesByYear
-    const dataByYearPHQ9 = data.PHQ9.changesByYear == null ? -1 : data.PHQ9.changesByYear
-    const dataByYearGAD7 = data.GAD7.changesByYear == null ? -1 : data.GAD7.changesByYear
-    const dataByYearADNM4 = data.ADNM4.changesByYear == null ? -1 : data.ADNM4.changesByYear
-    const dataByYearPCPTSD5 = data.PCPTSD5.changesByYear == null ? -1 : data.PCPTSD5.changesByYear
-    const dataByYearISI = data.ISI.changesByYear == null ? -1 : data.ISI.changesByYear
+    const dataByYearKOSSSF = data.KOSSSF.changesByYear == null ? -1 : data.KOSSSF.changesByYear;
+    const dataByYearPHQ9 = data.PHQ9.changesByYear == null ? -1 : data.PHQ9.changesByYear;
+    const dataByYearGAD7 = data.GAD7.changesByYear == null ? -1 : data.GAD7.changesByYear;
+    const dataByYearADNM4 = data.ADNM4.changesByYear == null ? -1 : data.ADNM4.changesByYear;
+    const dataByYearPCPTSD5 = data.PCPTSD5.changesByYear == null ? -1 : data.PCPTSD5.changesByYear;
+    const dataByYearISI = data.ISI.changesByYear == null ? -1 : data.ISI.changesByYear;
 
-    const dataRatesKOSSSF = data.KOSSSF.rates == null ? -1 : data.KOSSSF.rates
-    const dataRatesPHQ9 = data.PHQ9.rates == null ? -1 : data.PHQ9.rates
-    const dataRatesGAD7 = data.GAD7.rates == null ? -1 : data.GAD7.rates
-    const dataRatesADNM4 = data.ADNM4.rates == null ? -1 : data.ADNM4.rates
-    const dataRatesPCPTSD5 = data.PCPTSD5.rates == null ? -1 : data.PCPTSD5.rates
-    const dataRatesISI = data.ISI.rates == null ? -1 : data.ISI.rates
-    const dataRatesCSS = data.CSS.rates == null ? -1 : data.CSS.rates
+    const dataRatesKOSSSF = data.KOSSSF.rates == null ? -1 : data.KOSSSF.rates;
+    const dataRatesPHQ9 = data.PHQ9.rates == null ? -1 : data.PHQ9.rates;
+    const dataRatesGAD7 = data.GAD7.rates == null ? -1 : data.GAD7.rates;
+    const dataRatesADNM4 = data.ADNM4.rates == null ? -1 : data.ADNM4.rates;
+    const dataRatesPCPTSD5 = data.PCPTSD5.rates == null ? -1 : data.PCPTSD5.rates;
+    const dataRatesISI = data.ISI.rates == null ? -1 : data.ISI.rates;
+    const dataRatesCSS = data.CSS.rates == null ? -1 : data.CSS.rates;
 
-    const dataKosssfCompensation = data.KOSSSF.compensation == null ? [0, '0'] : data.KOSSSF.compensation
-    const dataKosssfJobInstability = data.KOSSSF.jobInstability == null ? [0, '0'] : data.KOSSSF.jobInstability
-    const dataKosssfRequirements = data.KOSSSF.requirements == null ? [0, '0'] : data.KOSSSF.requirements
-    const dataKosssfCulture = data.KOSSSF.culture == null ? [0, '0'] : data.KOSSSF.culture
-    const dataKosssfAutonomy = data.KOSSSF.autonomy == null ? [0, '0'] : data.KOSSSF.autonomy
-    const dataKosssfSystem = data.KOSSSF.system == null ? [0, '0'] : data.KOSSSF.system
-    const dataKosssfRelationship = data.KOSSSF.relationship == null ? [0, '0'] : data.KOSSSF.relationship
+    const dataKosssfCompensation = data.KOSSSF.compensation == null ? [0, '0'] : data.KOSSSF.compensation;
+    const dataKosssfJobInstability = data.KOSSSF.jobInstability == null ? [0, '0'] : data.KOSSSF.jobInstability;
+    const dataKosssfRequirements = data.KOSSSF.requirements == null ? [0, '0'] : data.KOSSSF.requirements;
+    const dataKosssfCulture = data.KOSSSF.culture == null ? [0, '0'] : data.KOSSSF.culture;
+    const dataKosssfAutonomy = data.KOSSSF.autonomy == null ? [0, '0'] : data.KOSSSF.autonomy;
+    const dataKosssfSystem = data.KOSSSF.system == null ? [0, '0'] : data.KOSSSF.system;
+    const dataKosssfRelationship = data.KOSSSF.relationship == null ? [0, '0'] : data.KOSSSF.relationship;
 
-    const dataMeansKOSSSF = data.KOSSSF.means == null ? -1 : data.KOSSSF.means
-    const dataPointsKOSSSF = data.KOSSSF.points == null ? -1 : data.KOSSSF.points
-    const dataPointsPHQ9 = data.PHQ9.points == null ? -1 : data.PHQ9.points
-    const dataPointsGAD7 = data.GAD7.points == null ? -1 : data.GAD7.points
-    const dataPointsADNM4 = data.ADNM4.points == null ? -1 : data.ADNM4.points
-    const dataPointsPCPTSD5 = data.PCPTSD5.points == null ? -1 : data.PCPTSD5.points
-    const dataPointsISI = data.ISI.points == null ? -1 : data.ISI.points
-    const dataPointsCSS = data.CSS.points == null ? -1 : data.CSS.points
+    const dataMeansKOSSSF = data.KOSSSF.means == null ? -1 : data.KOSSSF.means;
+    const dataPointsKOSSSF = data.KOSSSF.points == null ? -1 : data.KOSSSF.points;
+    const dataPointsPHQ9 = data.PHQ9.points == null ? -1 : data.PHQ9.points;
+    const dataPointsGAD7 = data.GAD7.points == null ? -1 : data.GAD7.points;
+    const dataPointsADNM4 = data.ADNM4.points == null ? -1 : data.ADNM4.points;
+    const dataPointsPCPTSD5 = data.PCPTSD5.points == null ? -1 : data.PCPTSD5.points;
+    const dataPointsISI = data.ISI.points == null ? -1 : data.ISI.points;
+    const dataPointsCSS = data.CSS.points == null ? -1 : data.CSS.points;
 
     // 데이터 api 정리하고 나서 아래 부분 정리하자.
     const inputs = [
         {
-            // 1. template에서, - 대신 camelcase 사용할 것 => 추후 template에서 반드시 수정할 것.
-            // 2. key에서 " " 사용하지 않을 것
-
             coverUserName: data.basicInfo.userName,
             coverExamDate: data.pathInfo.examDate,
             coverReportDate: data.pathInfo.reportDate,
@@ -612,43 +624,46 @@ async function generateFile(data: Data, charts: any) {
         }
     ];
 
-    // 이 아래 부분들도, 경로 부분은 데이터 api 정리되면 진행하
     // jpg 경로 생성 준비
     // 센터코드 => 센터명 변경
     const centerCode = data.pathInfo.centerCode
     let centerName;
     if (centerCode == 111) {
-        centerName = "his_jno"
+        centerName = "his_jno";
     } else if (centerCode == 112) {
-        centerName = "his_ydp"
+        centerName = "his_ydp";
     } else if (centerCode == 113) {
-        centerName = "his_gnm"
+        centerName = "his_gnm";
     } else if (centerCode == 211) {
-        centerName = "his_swn"
+        centerName = "his_swn";
     } else if (centerCode == 611) {
-        centerName = "his_tae"
+        centerName = "his_tae";
     } else if (centerCode == 612) {
-        centerName = "his_pus"
+        centerName = "his_pus";
     } else if (centerCode == 711) {
-        centerName = "his_kwj"
-    }
+        centerName = "his_kwj";
+    } else {
+        console.log("unknown center code");
+        return 0;
+    };
 
-    const examDate = data.pathInfo.examDate.replace(/-/g, "") // 기존 데이터 활용 위해. '-' 제거
-    const reservationNumber = data.pathInfo.reservationNumber
+    const examDate = data.pathInfo.examDate.replace(/-/g, "");
+    const reservationNumber = data.pathInfo.reservationNumber;
 
     // pdf 생성 경로에 따른 디렉토리 생성 + pdf 파일명 설정
-    // const pdfPath = await makeDir(config.get('PDF_PATH'))
-    const pdfPath = await makeDir(config.get('PDF_PATH_LOCAL'))
+    // const pdfPath = await makeDir(config.get('PDF_PATH'));
+    const pdfPath = await makeDir(config.get('PDF_PATH_LOCAL'));
     const pdfName = `${pdfPath}/${centerCode}_${examDate}_${reservationNumber}.pdf`;
 
     try {
-        const template = templates as Template
-        const pdf = await labelmake({ inputs, template, font })
+        const template = templates as Template;
+        const pdf = await labelmake({ inputs, template, font });
         fs.writeFileSync(pdfName, pdf, "utf-8");
+        console.log(`PDF generated: ${pdfName}`);
 
         // jpg 생성 경로에 따른 디렉토리 생성 + jpg 파일명 설정
-        // const jpgPath = await makeDir(config.get('JPG_PATH') + `/${centerName}/${examDate}`)
-        const jpgPath = await makeDir(config.get('JPG_PATH_LOCAL') + `/${centerName}/${examDate}`)
+        // const jpgPath = await makeDir(config.get('JPG_PATH') + `/${centerName}/${examDate}`);
+        const jpgPath = await makeDir(config.get('JPG_PATH_LOCAL') + `/${centerName}/${examDate}`);
 
         const options = {
             density: 100,
@@ -658,21 +673,28 @@ async function generateFile(data: Data, charts: any) {
             width: 2100,
             height: 2970
         };
-        const storeAsImage = fromPath(pdfName, options);
-        let pages = 0;
-        for (let i = 1; i < 6; i++) {
-            await storeAsImage(i);
-            pages++;
-        }
-        console.log(`Convert complete.`);
-        return pages;
+
+        // option 1 : bulk convert, forks several (page numbers) gm process, fast use much memory
+        const result = await fromPath(pdfName, options).bulk!(-1); // bulk!로 처리하는 것이 과연 충분한가..
+        console.log(`Convert completed: ${jpgPath}/${reservationNumber}.jpg`);
+        return result;
+
+        // option 2 : serial convert, forks 1 process, slow
+        // const storeAsImage = fromPath(pdfName, options);
+        // let pages = 0;
+        // for (let i = 1; i < 7; i++) {
+        //     await storeAsImage(i);
+        //     pages++;
+        // }
+        // console.log(`Convert compeleted: ${centerName}/${examDate}/${reservationNumber}`);
+        // return pages;
     } catch(exception) {
-        console.log(exception)
+        console.log(exception);
     }
 }
 
 
 export {
-    generateChart, generateFile
+    saveMessage, generateChart, generateFile
 }
 

@@ -7,7 +7,8 @@ const data_0 =
         pathInfo: {
             reservationNumber: 1110111011,
             centerCode: 111,
-            examDate: "1989-02-17"
+            examDate: "1989-02-17",
+            reportDate: "1989-02-19"
         },
         basicInfo: {
             userName: "test-1",
@@ -25,7 +26,7 @@ const data_0 =
             autonomy: [2.1, "하위 50"],
             system: [7.9, "하위 50"],
             relationship: [3, "하위 25"],
-            changesByYear: [0], // 24
+            changesByYear: [24], // 24
             commentDetails: "스트레스 측정 점수는 39.5점으로, 참고치 하위 25%에 해당합니다.",
         },
         PHQ9 : {
@@ -42,12 +43,12 @@ const data_0 =
         GAD7 : {
             signals: [45],
             signalTexts: "자살위험아님",
-            points : [12],
+            points : [15],
             rates: [75],
             comments: "약간 심한 수준의 우울감을 자주 느낌",
             requirements: "추가 평가 또는 전문가의 도움이 필요함",
             requirementTexts: "전문도움필요",
-            changesByYear: [12],
+            changesByYear: [15],
             commentDetails: "검사 결과는 중간 수준의 불안감을 자주 느끼고 있습니다. 불안장애 진단은 병력 및 여러 검사 결과와 전문의의 종합적인 판단에 의해 이루어지므로, 추가 평가 또는 전문가의 도움이 필요합니다.",
         },
         ADNM4 : {

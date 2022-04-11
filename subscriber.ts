@@ -1,9 +1,12 @@
 import amqp from 'amqplib/callback_api.js';
-import {generateChart, generateFile } from "./generateChart";
+import {saveMessage, generateChart, generateFile } from "./generateChart";
 import config from "config";
+import {ConsumeMessage, Message} from "amqplib";
 
 amqp.connect('amqp://localhost', (connectionError, connection) => {
+    console.log("tryConnection-subscriber")
     if(connectionError) {
+        console.log("connectionError-subscriber")
         throw connectionError;
     }
     // Step 2: create channel
@@ -20,23 +23,24 @@ amqp.connect('amqp://localhost', (connectionError, connection) => {
         channel.prefetch(1);
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queueName);
 
-        channel.consume(queueName, async (message: any) => {
-                try {
-                    // if(message?.content == null) {
-                    //
-                    // }
-                    console.log(" [x] Received data");
-                    const data = JSON.parse(message.content)
-                    // clustering
-                    const charts = await generateChart(data)
-                    console.log('chart generated')
-                    const pages = await generateFile(data, charts)
-                    console.log(pages + ' files written')
-                } catch(ex) {
-                    console.log(ex);
-                } finally {
-                    channel.ack(message);
-                }
+        channel.consume(queueName, async (message: Message | null) => {
+                    if(message == null) {
+                        console.log("No messages to subscribe.")
+                    } else {
+                        try {
+                            console.log(" [x] Received data");
+                            const data = await saveMessage(message.content);
+                            const charts = await generateChart(data);
+                            await generateFile(data, charts);
+                            // const pages = await generateFile(data, charts);
+                            // console.log(pages + ' files written')
+                        } catch(ex) {
+                            console.log(ex);
+                        } finally {
+                            channel.ack(message);
+                        }
+                    }
+
         }, {
                 noAck: false
             });
