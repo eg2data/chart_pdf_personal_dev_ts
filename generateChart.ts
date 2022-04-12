@@ -615,7 +615,6 @@ async function generateFile(data: Data, charts: any) {
 
             CSSSignals: charts.chartSignalsCSS,
             CSSSignalTexts: data.CSS.signalTexts,
-            CSSRates: dataRatesCSS.toString() + "%",
             CSSRateBar: charts.chartRateBarCSS,
             CSSComments: data.CSS.comments,
             CSSRequirements: data.CSS.requirements,
