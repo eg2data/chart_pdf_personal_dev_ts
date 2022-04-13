@@ -26,94 +26,91 @@ const font = {
 const labelsByYear = [new Date().getFullYear()];
 
 type Data = {
-        pathInfo: {
-            reservationNumber: number,
-            centerCode: number,
-            examDate: string,
-            reportDate: string
-        },
-        basicInfo: {
-            userName: string,
-        },
-        KOSSSF: {
-            signals: number[],
-            signalTexts: string,
-            points : number[],
-            rates : string[],
-            means : number[],
-            compensation: [number, string],
-            jobInstability: [number, string],
-            requirements: [number, string],
-            culture: [number, string],
-            autonomy: [number, string],
-            system: [number, string],
-            relationship: [number, string],
-            changesByYear: number[], // 24
-            commentDetails: string,
-        },
-        PHQ9 : {
-            signals: number[],
-            signalTexts: string,
-            points : number[],
-            rates: number[],
-            comments: string,
-            requirements: string,
-            requirementTexts: string,
-            changesByYear: number[],
-            commentDetails: string,
-        },
-        GAD7 : {
-            signals: number[],
-            signalTexts: string,
-            points : number[],
-            rates: number[],
-            comments: string,
-            requirements: string,
-            requirementTexts: string,
-            changesByYear: number[],
-            commentDetails: string,
-        },
-        ADNM4 : {
-            signals: number[],
-            signalTexts: string,
-            points : number[],
-            rates: number[],
-            comments: string,
-            requirements: string,
-            requirementTexts: string,
-            changesByYear: number[],
-            commentDetails: string,        },
-        PCPTSD5 : {
-            signals: number[],
-            signalTexts: string,
-            points : number[],
-            rates: number[],
-            comments: string,
-            requirements: string,
-            requirementTexts: string,
-            changesByYear: number[],
-            commentDetails: string,        },
-        ISI : {
-            signals: number[],
-            signalTexts: string,
-            points : number[],
-            rates: number[],
-            comments: string,
-            requirements: string,
-            requirementTexts: string,
-            changesByYear: number[],
-            commentDetails: string,        },
-        CSS : {
-            signals: number[],
-            signalTexts: string,
-            points : number[],
-            rates: number[],
-            comments: string,
-            requirements: string,
-            requirementTexts: string,
-            commentDetails: string,
-        },
-    };
+    "info": {
+        "name": string,
+        "reservationNumber": number,
+        "centerCode": number,
+        "examDate": string,
+        "reportDate": string,
+    },
+    "KOSS": {
+        "autonomy": {"distribution": string, "score": number},
+        "compensation": {"distribution": string, "score": number},
+        "culture": {"distribution": string, "score": number},
+        "jobInstability": {"distribution": string, "score": number},
+        "relationship": {"distribution": string, "score": number},
+        "requirements": {"distribution": string, "score": number},
+        "system": {"distribution": string, "score": number},
+        "total": {
+            "distribution" : string,
+            "score" : number,
+            "scoreMean" : number,
+            "level": number,
+            "result": string,
+            "byYear": number,
+            "details": string,
+        }
+    },
+    "PHQ9" : {
+        "level": number,
+        "result": string,
+        "score" : number,
+        "riskRate": number,
+        "description": string,
+        "guidance": string,
+        "advice": string,
+        "byYear": number,
+        "details": string,
+    },
+    "GAD7" : {
+        "level": number,
+        "result": string,
+        "score" : number,
+        "riskRate": number,
+        "description": string,
+        "guidance": string,
+        "advice": string,
+        "byYear": number,
+        "details": string,
+    },
+    "ADNM4" : {
+        "level": number,
+        "result": string,
+        "score" : number,
+        "riskRate": number,
+        "description": string,
+        "guidance": string,
+        "advice": string,
+        "byYear": number,
+        "details": string,    },
+    "PCPTSD5" : {
+        "level": number,
+        "result": string,
+        "score" : number,
+        "riskRate": number,
+        "description": string,
+        "guidance": string,
+        "advice": string,
+        "byYear": number,
+        "details": string,    },
+    "ISI" : {
+        "level": number,
+        "result": string,
+        "score" : number,
+        "riskRate": number,
+        "description": string,
+        "guidance": string,
+        "advice": string,
+        "byYear": number,
+        "details": string,    },
+    "CSS" : {
+        "result": string,
+        "description": string,
+        "guidance": string,
+        "advice": string,
+        "details": string,
+    },
+}
 class ScalesDefault {
     constructor(max: number) {
         this.x.max = max;
@@ -169,13 +166,13 @@ class ScalesByYear { // ScalsDefault class를 extend할 순 없을까..?
     };
 };
 class ConfigSignals implements ChartConfiguration {
-    constructor(private input: number[] | number) { };
+    constructor(private input: number) { };
     type = 'bar' as ChartType;
     data = {
         labels: ['a'],
         datasets: [
             {
-                data: this.input,
+                data: [this.input],
                 barPercentage: 0.0,
             }
         ]
@@ -212,13 +209,13 @@ class ConfigSignals implements ChartConfiguration {
     } as any;
 };
 class ConfigPoints implements ChartConfiguration {
-    constructor(private input: (number | string)[] | number[]) { };
+    constructor(private input: {"distribution": string, "score": number}) { };
     type = 'bar' as ChartType;
     data = {
         labels: ['a'],
         datasets: [
             {
-                data: this.input.slice(0,1),
+                data: [this.input.score],
                 barPercentage: 0.0,
             }
         ]
@@ -233,7 +230,7 @@ class ConfigPoints implements ChartConfiguration {
                 backgroundColor: ['#FF0000'],
                 anchor: 'end',
                 align: 'center',
-                borderWidth: this.input[1] == 0 ? '' : 15,
+                borderWidth: this.input.score == 0 ? '' : 15,
                 borderRadius: 50,
                 font: {
                     size: 1,
@@ -247,10 +244,10 @@ class ConfigPoints implements ChartConfiguration {
     } as any;
 };
 class ConfigRateBar implements ChartConfiguration {
-    constructor(private input: number[] | number) { };
+    constructor(private input: number) { };
     private changeColour(): Array<string> {
         return [
-            this.input == -1 ? '' : '#A6D7C3'
+            this.input == 0 ? '' : '#A6D7C3'
         ]
     };
     type = 'bar' as ChartType;
@@ -258,7 +255,7 @@ class ConfigRateBar implements ChartConfiguration {
         labels: ['a'],
         datasets: [
             {
-                data: this.input,
+                data: [this.input],
                 barPercentage: 100,
                 backgroundColor: this.changeColour()
             }
@@ -275,7 +272,7 @@ class ConfigRateBar implements ChartConfiguration {
     } as any;
 };
 class ConfigByYear implements ChartConfiguration {
-    constructor(private input: number[] | number, scales: ScalesByYear) {
+    constructor(private input: number, scales: ScalesByYear) {
         this.options.scales = scales;
     };
     type = 'bar' as ChartType;
@@ -283,7 +280,7 @@ class ConfigByYear implements ChartConfiguration {
         labels: this.input == -1 ? '' : labelsByYear,
         datasets: [
             {
-                data: this.input,
+                data: [this.input],
                 barPercentage: 0.1,
                 backgroundColor: ['#020715'],
             }
@@ -302,9 +299,9 @@ class ConfigByYear implements ChartConfiguration {
 async function saveMessage(message: any): Promise<Data> {
     const data = JSON.parse(message)
 
-    const centerCode = data.pathInfo.centerCode;
-    const examDate = data.pathInfo.examDate.replace(/-/g, "");
-    const reservationNumber = data.pathInfo.reservationNumber;
+    const centerCode = data.info.centerCode;
+    const examDate = data.info.examDate.replace(/-/g, "");
+    const reservationNumber = data.info.reservationNumber;
 
     const pdfPath = await makeDir(config.get('PDF_PATH_LOCAL'));
     const fn = `${pdfPath}/${centerCode}_${examDate}_${reservationNumber}.json`;
@@ -323,45 +320,42 @@ async function generateChart(data: Data) {
     // data null check - 이거 그냥.. 호출하는 함수로 만들어둘까? 호출만하면 걍 만들어지게?
 
     // data가 들어오자마자, null이 있다면 치환해버려
-    const dataSignalsKOSSSF = data.KOSSSF.signals == null ? -1 : data.KOSSSF.signals;
-    const dataSignalsPHQ9 = data.PHQ9.signals == null ? -1 : data.PHQ9.signals;
-    const dataSignalsGAD7 = data.GAD7.signals == null ? -1 : data.GAD7.signals;
-    const dataSignalsADNM4 = data.ADNM4.signals == null ? -1 : data.ADNM4.signals;
-    const dataSignalsPCPTSD5 = data.PCPTSD5.signals == null ? -1 : data.PCPTSD5.signals;
-    const dataSignalsISI = data.ISI.signals == null ? -1 : data.ISI.signals;
-    const dataSignalsCSS = data.CSS.signals == null ? -1 : data.CSS.signals;
+    const dataSignalsKOSSSF = data.KOSS.total.level == null ? -1 : data.KOSS.total.level;
+    const dataSignalsPHQ9 = data.PHQ9.level == null ? -1 : data.PHQ9.level;
+    const dataSignalsGAD7 = data.GAD7.level == null ? -1 : data.GAD7.level;
+    const dataSignalsADNM4 = data.ADNM4.level == null ? -1 : data.ADNM4.level;
+    const dataSignalsPCPTSD5 = data.PCPTSD5.level == null ? -1 : data.PCPTSD5.level;
+    const dataSignalsISI = data.ISI.level == null ? -1 : data.ISI.level;
 
-    const dataByYearKOSSSF = data.KOSSSF.changesByYear == null ? -1 : data.KOSSSF.changesByYear;
-    const dataByYearPHQ9 = data.PHQ9.changesByYear == null ? -1 : data.PHQ9.changesByYear;
-    const dataByYearGAD7 = data.GAD7.changesByYear == null ? -1 : data.GAD7.changesByYear;
-    const dataByYearADNM4 = data.ADNM4.changesByYear == null ? -1 : data.ADNM4.changesByYear;
-    const dataByYearPCPTSD5 = data.PCPTSD5.changesByYear == null ? -1 : data.PCPTSD5.changesByYear;
-    const dataByYearISI = data.ISI.changesByYear == null ? -1 : data.ISI.changesByYear;
+    const dataByYearKOSSSF = data.KOSS.total.byYear == null ? -1 : data.KOSS.total.byYear;
+    const dataByYearPHQ9 = data.PHQ9.byYear == null ? -1 : data.PHQ9.byYear;
+    const dataByYearGAD7 = data.GAD7.byYear == null ? -1 : data.GAD7.byYear;
+    const dataByYearADNM4 = data.ADNM4.byYear == null ? -1 : data.ADNM4.byYear;
+    const dataByYearPCPTSD5 = data.PCPTSD5.byYear == null ? -1 : data.PCPTSD5.byYear;
+    const dataByYearISI = data.ISI.byYear == null ? -1 : data.ISI.byYear;
 
-    const dataRatesKOSSSF = data.KOSSSF.rates == null ? -1 : data.KOSSSF.rates;
-    const dataRatesPHQ9 = data.PHQ9.rates == null ? -1 : data.PHQ9.rates;
-    const dataRatesGAD7 = data.GAD7.rates == null ? -1 : data.GAD7.rates;
-    const dataRatesADNM4 = data.ADNM4.rates == null ? -1 : data.ADNM4.rates;
-    const dataRatesPCPTSD5 = data.PCPTSD5.rates == null ? -1 : data.PCPTSD5.rates;
-    const dataRatesISI = data.ISI.rates == null ? -1 : data.ISI.rates;
-    const dataRatesCSS = data.CSS.rates == null ? -1 : data.CSS.rates;
+    const dataRatesKOSSSF = data.KOSS.total.distribution == "" ? 0 : data.KOSS.total.distribution;
+    const dataRatesPHQ9 = data.PHQ9.riskRate == null ? 0 : data.PHQ9.riskRate;
+    const dataRatesGAD7 = data.GAD7.riskRate == null ? 0 : data.GAD7.riskRate;
+    const dataRatesADNM4 = data.ADNM4.riskRate == null ? 0 : data.ADNM4.riskRate;
+    const dataRatesPCPTSD5 = data.PCPTSD5.riskRate == null ? 0 : data.PCPTSD5.riskRate;
+    const dataRatesISI = data.ISI.riskRate == null ? 0 : data.ISI.riskRate;
 
-    const dataKosssfCompensation = data.KOSSSF.compensation == null ? [0, '0'] : data.KOSSSF.compensation;
-    const dataKosssfJobInstability = data.KOSSSF.jobInstability == null ? [0, '0'] : data.KOSSSF.jobInstability;
-    const dataKosssfRequirements = data.KOSSSF.requirements == null ? [0, '0'] : data.KOSSSF.requirements;
-    const dataKosssfCulture = data.KOSSSF.culture == null ? [0, '0'] : data.KOSSSF.culture;
-    const dataKosssfAutonomy = data.KOSSSF.autonomy == null ? [0, '0'] : data.KOSSSF.autonomy;
-    const dataKosssfSystem = data.KOSSSF.system == null ? [0, '0'] : data.KOSSSF.system;
-    const dataKosssfRelationship = data.KOSSSF.relationship == null ? [0, '0'] : data.KOSSSF.relationship;
+    const dataKosssfCompensation = data.KOSS.compensation.score == null ? {"distribution": "0", "score": 0} : data.KOSS.compensation;
+    const dataKosssfJobInstability = data.KOSS.jobInstability.score == null ? {"distribution": "0", "score": 0} : data.KOSS.jobInstability;
+    const dataKosssfRequirements = data.KOSS.requirements.score == null ? {"distribution": "0", "score": 0} : data.KOSS.requirements;
+    const dataKosssfCulture = data.KOSS.culture.score == null ? {"distribution": "0", "score": 0} : data.KOSS.culture;
+    const dataKosssfAutonomy = data.KOSS.autonomy.score == null ? {"distribution": "0", "score": 0} : data.KOSS.autonomy;
+    const dataKosssfSystem = data.KOSS.system.score == null ? {"distribution": "0", "score": 0} : data.KOSS.system;
+    const dataKosssfRelationship = data.KOSS.relationship.score == null ? {"distribution": "0", "score": 0} : data.KOSS.relationship;
 
-    const dataMeansKOSSSF = data.KOSSSF.means == null ? -1 : data.KOSSSF.means;
-    const dataPointsKOSSSF = data.KOSSSF.points == null ? -1 : data.KOSSSF.points;
-    const dataPointsPHQ9 = data.PHQ9.points == null ? -1 : data.PHQ9.points;
-    const dataPointsGAD7 = data.GAD7.points == null ? -1 : data.GAD7.points;
-    const dataPointsADNM4 = data.ADNM4.points == null ? -1 : data.ADNM4.points;
-    const dataPointsPCPTSD5 = data.PCPTSD5.points == null ? -1 : data.PCPTSD5.points;
-    const dataPointsISI = data.ISI.points == null ? -1 : data.ISI.points;
-    const dataPointsCSS = data.CSS.points == null ? -1 : data.CSS.points;
+    const dataMeansKOSSSF = data.KOSS.total.scoreMean == null ? 0 : data.KOSS.total.scoreMean;
+    const dataPointsKOSSSF = data.KOSS.total.score == null ? 0 : data.KOSS.total.score;
+    const dataPointsPHQ9 = data.PHQ9.score == null ? 0 : data.PHQ9.score;
+    const dataPointsGAD7 = data.GAD7.score == null ? 0 : data.GAD7.score;
+    const dataPointsADNM4 = data.ADNM4.score == null ? 0 : data.ADNM4.score;
+    const dataPointsPCPTSD5 = data.PCPTSD5.score == null ? 0 : data.PCPTSD5.score;
+    const dataPointsISI = data.ISI.score == null ? 0 : data.ISI.score;
 
     // canvas
     const canvasSignals = new ChartJSNodeCanvas({width: 240, height: 60});
@@ -376,14 +370,12 @@ async function generateChart(data: Data) {
     const configSignalsADNM4 = new ConfigSignals(dataSignalsADNM4);
     const configSignalsPCPTSD5 = new ConfigSignals(dataSignalsPCPTSD5);
     const configSignalsISI = new ConfigSignals(dataSignalsISI);
-    const configSignalsCSS = new ConfigSignals(dataSignalsCSS);
 
     const configRateBarPHQ9 = new ConfigRateBar(dataRatesPHQ9);
     const configRateBarGAD7 = new ConfigRateBar(dataRatesGAD7);
     const configRateBarADNM4 = new ConfigRateBar(dataRatesADNM4);
     const configRateBarPCPTSD5 = new ConfigRateBar(dataRatesPCPTSD5);
     const configRateBarISI = new ConfigRateBar(dataRatesISI);
-    const configRateBarCSS = new ConfigRateBar(dataRatesCSS);
 
     const configPointsCompensation = new ConfigPoints(dataKosssfCompensation);
     const configPointsJobInstability = new ConfigPoints(dataKosssfJobInstability);
@@ -408,14 +400,12 @@ async function generateChart(data: Data) {
     const chartSignalsADNM4 = await canvasSignals.renderToDataURL(configSignalsADNM4);
     const chartSignalsPCPTSD5 = await canvasSignals.renderToDataURL(configSignalsPCPTSD5);
     const chartSignalsISI = await canvasSignals.renderToDataURL(configSignalsISI);
-    const chartSignalsCSS = await canvasSignals.renderToDataURL(configSignalsCSS);
 
     const chartRateBarPHQ9 = await canvasRateBar.renderToDataURL(configRateBarPHQ9);
     const chartRateBarGAD7 = await canvasRateBar.renderToDataURL(configRateBarGAD7);
     const chartRateBarADNM4 = await canvasRateBar.renderToDataURL(configRateBarADNM4);
     const chartRateBarPCPTSD5 = await canvasRateBar.renderToDataURL(configRateBarPCPTSD5);
     const chartRateBarISI = await canvasRateBar.renderToDataURL(configRateBarISI);
-    const chartRateBarCSS = await canvasRateBar.renderToDataURL(configRateBarCSS);
 
     const chartPointsCompensation = await canvasPoints.renderToDataURL(configPointsCompensation);
     const chartPointsJobInstability = await canvasPoints.renderToDataURL(configPointsJobInstability);
@@ -437,9 +427,11 @@ async function generateChart(data: Data) {
     // 아래 이건.. 어떤 타입이라고 할 수 있을까? 만들어야할까? + 각각이 string으로 잡히는게 지금.. 맞는 것인가....
     // Promisd<string>[] 이거 같긴하다. promise들의 집합.
     return {
-        chartSignalsKOSSSF, chartSignalsPHQ9, chartSignalsGAD7, chartSignalsADNM4, chartSignalsPCPTSD5, chartSignalsISI, chartSignalsCSS,
-        chartRateBarPHQ9, chartRateBarGAD7, chartRateBarADNM4, chartRateBarPCPTSD5, chartRateBarISI, chartRateBarCSS,
-        chartByYearKOSSSF, chartByYearPHQ9, chartByYearGAD7, chartByYearADNM4, chartByYearPCPTSD5, chartByYearISI,
+        chartSignalsKOSSSF,
+        chartSignalsPHQ9, chartSignalsGAD7, chartSignalsADNM4, chartSignalsPCPTSD5, chartSignalsISI,
+        chartRateBarPHQ9, chartRateBarGAD7, chartRateBarADNM4, chartRateBarPCPTSD5, chartRateBarISI,
+        chartByYearKOSSSF,
+        chartByYearPHQ9, chartByYearGAD7, chartByYearADNM4, chartByYearPCPTSD5, chartByYearISI,
         chartPointsCompensation, chartPointsJobInstability, chartPointsRequirements, chartPointsCulture, chartPointsAutonomy, chartPointsSystem, chartPointsRelationship,
     };
 };
@@ -447,95 +439,89 @@ async function generateChart(data: Data) {
 // generateChart 함수의 return type을 아직 정하지 못해 charts의 type을 any로 일단.
 async function generateFile(data: Data, charts: any) {
     // data null check - 이거 그냥.. 호출하는 함수로 만들어둘까? 호출만하면 걍 만들어지게?
-    const dataSignalsKOSSSF = data.KOSSSF.signals == null ? -1 : data.KOSSSF.signals;
-    const dataSignalsPHQ9 = data.PHQ9.signals == null ? -1 : data.PHQ9.signals;
-    const dataSignalsGAD7 = data.GAD7.signals == null ? -1 : data.GAD7.signals;
-    const dataSignalsADNM4 = data.ADNM4.signals == null ? -1 : data.ADNM4.signals;
-    const dataSignalsPCPTSD5 = data.PCPTSD5.signals == null ? -1 : data.PCPTSD5.signals;
-    const dataSignalsISI = data.ISI.signals == null ? -1 : data.ISI.signals;
-    const dataSignalsCSS = data.CSS.signals == null ? -1 : data.CSS.signals;
+    const dataSignalsKOSSSF = data.KOSS.total.level == null ? -1 : data.KOSS.total.level;
+    const dataSignalsPHQ9 = data.PHQ9.level == null ? -1 : data.PHQ9.level;
+    const dataSignalsGAD7 = data.GAD7.level == null ? -1 : data.GAD7.level;
+    const dataSignalsADNM4 = data.ADNM4.level == null ? -1 : data.ADNM4.level;
+    const dataSignalsPCPTSD5 = data.PCPTSD5.level == null ? -1 : data.PCPTSD5.level;
+    const dataSignalsISI = data.ISI.level == null ? -1 : data.ISI.level;
 
-    const dataByYearKOSSSF = data.KOSSSF.changesByYear == null ? -1 : data.KOSSSF.changesByYear;
-    const dataByYearPHQ9 = data.PHQ9.changesByYear == null ? -1 : data.PHQ9.changesByYear;
-    const dataByYearGAD7 = data.GAD7.changesByYear == null ? -1 : data.GAD7.changesByYear;
-    const dataByYearADNM4 = data.ADNM4.changesByYear == null ? -1 : data.ADNM4.changesByYear;
-    const dataByYearPCPTSD5 = data.PCPTSD5.changesByYear == null ? -1 : data.PCPTSD5.changesByYear;
-    const dataByYearISI = data.ISI.changesByYear == null ? -1 : data.ISI.changesByYear;
+    const dataByYearKOSSSF = data.KOSS.total.byYear == null ? -1 : data.KOSS.total.byYear;
+    const dataByYearPHQ9 = data.PHQ9.byYear == null ? -1 : data.PHQ9.byYear;
+    const dataByYearGAD7 = data.GAD7.byYear == null ? -1 : data.GAD7.byYear;
+    const dataByYearADNM4 = data.ADNM4.byYear == null ? -1 : data.ADNM4.byYear;
+    const dataByYearPCPTSD5 = data.PCPTSD5.byYear == null ? -1 : data.PCPTSD5.byYear;
+    const dataByYearISI = data.ISI.byYear == null ? -1 : data.ISI.byYear;
 
-    const dataRatesKOSSSF = data.KOSSSF.rates == null ? -1 : data.KOSSSF.rates;
-    const dataRatesPHQ9 = data.PHQ9.rates == null ? -1 : data.PHQ9.rates;
-    const dataRatesGAD7 = data.GAD7.rates == null ? -1 : data.GAD7.rates;
-    const dataRatesADNM4 = data.ADNM4.rates == null ? -1 : data.ADNM4.rates;
-    const dataRatesPCPTSD5 = data.PCPTSD5.rates == null ? -1 : data.PCPTSD5.rates;
-    const dataRatesISI = data.ISI.rates == null ? -1 : data.ISI.rates;
-    const dataRatesCSS = data.CSS.rates == null ? -1 : data.CSS.rates;
+    const dataRatesKOSSSF = data.KOSS.total.distribution == "" ? 0 : data.KOSS.total.distribution;
+    const dataRatesPHQ9 = data.PHQ9.riskRate == null ? 0 : data.PHQ9.riskRate;
+    const dataRatesGAD7 = data.GAD7.riskRate == null ? 0 : data.GAD7.riskRate;
+    const dataRatesADNM4 = data.ADNM4.riskRate == null ? 0 : data.ADNM4.riskRate;
+    const dataRatesPCPTSD5 = data.PCPTSD5.riskRate == null ? 0 : data.PCPTSD5.riskRate;
+    const dataRatesISI = data.ISI.riskRate == null ? 0 : data.ISI.riskRate;
 
-    const dataKosssfCompensation = data.KOSSSF.compensation == null ? [0, '0'] : data.KOSSSF.compensation;
-    const dataKosssfJobInstability = data.KOSSSF.jobInstability == null ? [0, '0'] : data.KOSSSF.jobInstability;
-    const dataKosssfRequirements = data.KOSSSF.requirements == null ? [0, '0'] : data.KOSSSF.requirements;
-    const dataKosssfCulture = data.KOSSSF.culture == null ? [0, '0'] : data.KOSSSF.culture;
-    const dataKosssfAutonomy = data.KOSSSF.autonomy == null ? [0, '0'] : data.KOSSSF.autonomy;
-    const dataKosssfSystem = data.KOSSSF.system == null ? [0, '0'] : data.KOSSSF.system;
-    const dataKosssfRelationship = data.KOSSSF.relationship == null ? [0, '0'] : data.KOSSSF.relationship;
+    const dataKosssfCompensation = data.KOSS.compensation.score == null ? {"distribution": "0", "score": 0} : data.KOSS.compensation;
+    const dataKosssfJobInstability = data.KOSS.jobInstability.score == null ? {"distribution": "0", "score": 0} : data.KOSS.jobInstability;
+    const dataKosssfRequirements = data.KOSS.requirements.score == null ? {"distribution": "0", "score": 0} : data.KOSS.requirements;
+    const dataKosssfCulture = data.KOSS.culture.score == null ? {"distribution": "0", "score": 0} : data.KOSS.culture;
+    const dataKosssfAutonomy = data.KOSS.autonomy.score == null ? {"distribution": "0", "score": 0} : data.KOSS.autonomy;
+    const dataKosssfSystem = data.KOSS.system.score == null ? {"distribution": "0", "score": 0} : data.KOSS.system;
+    const dataKosssfRelationship = data.KOSS.relationship.score == null ? {"distribution": "0", "score": 0} : data.KOSS.relationship;
 
-    const dataMeansKOSSSF = data.KOSSSF.means == null ? -1 : data.KOSSSF.means;
-    const dataPointsKOSSSF = data.KOSSSF.points == null ? -1 : data.KOSSSF.points;
-    const dataPointsPHQ9 = data.PHQ9.points == null ? -1 : data.PHQ9.points;
-    const dataPointsGAD7 = data.GAD7.points == null ? -1 : data.GAD7.points;
-    const dataPointsADNM4 = data.ADNM4.points == null ? -1 : data.ADNM4.points;
-    const dataPointsPCPTSD5 = data.PCPTSD5.points == null ? -1 : data.PCPTSD5.points;
-    const dataPointsISI = data.ISI.points == null ? -1 : data.ISI.points;
-    const dataPointsCSS = data.CSS.points == null ? -1 : data.CSS.points;
+    const dataMeansKOSSSF = data.KOSS.total.scoreMean == null ? 0 : data.KOSS.total.scoreMean;
+    const dataPointsKOSSSF = data.KOSS.total.score == null ? 0 : data.KOSS.total.score;
+    const dataPointsPHQ9 = data.PHQ9.score == null ? 0 : data.PHQ9.score;
+    const dataPointsGAD7 = data.GAD7.score == null ? 0 : data.GAD7.score;
+    const dataPointsADNM4 = data.ADNM4.score == null ? 0 : data.ADNM4.score;
+    const dataPointsPCPTSD5 = data.PCPTSD5.score == null ? 0 : data.PCPTSD5.score;
+    const dataPointsISI = data.ISI.score == null ? 0 : data.ISI.score;
 
-    // 데이터 api 정리하고 나서 아래 부분 정리하자.
     const inputs = [
         {
-            coverUserName: data.basicInfo.userName,
-            coverExamDate: data.pathInfo.examDate,
-            coverReportDate: data.pathInfo.reportDate,
+            coverUserName: data.info.name,
+            coverExamDate: data.info.examDate,
+            coverReportDate: data.info.reportDate,
 
-            overallUserName: data.basicInfo.userName,
-            overallKOSSSFSignalTexts: ": " + data.KOSSSF.signalTexts,
+            overallUserName: data.info.name,
+            overallKOSSSFSignalTexts: ": " + data.KOSS.total.result,
             overallKOSSSFSignals: charts.chartSignalsKOSSSF,
             overallKOSSSFPoints: dataPointsKOSSSF.toString() + "점  /",
             overallKOSSSFRates: dataRatesKOSSSF.toString() + "%",
             overallKOSSSFMeans: dataMeansKOSSSF.toString() + "점",
 
-            overallPHQ9SignalTexts: ": " + data.PHQ9.signalTexts,
+            overallPHQ9SignalTexts: ": " + data.PHQ9.result,
             overallPHQ9Signals: charts.chartSignalsPHQ9,
             overallPHQ9Points: dataPointsPHQ9.toString() + "점  /",
             overallPHQ9Rates: dataRatesPHQ9.toString() + "%",
-            overallPHQ9Comments: data.PHQ9.comments,
+            overallPHQ9Comments: data.PHQ9.description,
 
-            overallGAD7SignalTexts: ": " + data.GAD7.signalTexts,
+            overallGAD7SignalTexts: ": " + data.GAD7.result,
             overallGAD7Signals: charts.chartSignalsGAD7,
             overallGAD7Points: dataPointsGAD7.toString() + "점  /",
             overallGAD7Rates: dataRatesGAD7.toString() + "%",
-            overallGAD7Comments: data.GAD7.comments,
+            overallGAD7Comments: data.GAD7.description,
 
-            overallADNM4SignalTexts: ": " + data.ADNM4.signalTexts,
+            overallADNM4SignalTexts: ": " + data.ADNM4.result,
             overallADNM4Signals: charts.chartSignalsADNM4,
             overallADNM4Points: dataPointsADNM4.toString() + "점  /",
             overallADNM4Rates: dataRatesADNM4.toString() + "%",
-            overallADNM4Comments: data.ADNM4.comments,
+            overallADNM4Comments: data.ADNM4.description,
 
-            overallPCPTSD5SignalTexts: ": " + data.PCPTSD5.signalTexts,
+            overallPCPTSD5SignalTexts: ": " + data.PCPTSD5.result,
             overallPCPTSD5Signals: charts.chartSignalsPCPTSD5,
             overallPCPTSD5Points: dataPointsPCPTSD5.toString() + "점  /",
             overallPCPTSD5Rates: dataRatesPCPTSD5.toString() + "%",
-            overallPCPTSD5Comments: data.PCPTSD5.comments,
+            overallPCPTSD5Comments: data.PCPTSD5.description,
 
-            overallISISignalTexts: ": " + data.ISI.signalTexts,
+            overallISISignalTexts: ": " + data.ISI.result,
             overallISISignals: charts.chartSignalsISI,
             overallISIPoints: dataPointsISI.toString() + "점  /",
             overallISIRates: dataRatesISI.toString() + "%",
-            overallISIComments: data.ISI.comments,
+            overallISIComments: data.ISI.description,
 
-            overallCSSSignalTexts: ": " + data.CSS.signalTexts,
+            overallCSSSignalTexts: ": " + data.CSS.result,
             overallCSSSignals: charts.chartSignalsCSS,
-            overallCSSPoints: dataPointsCSS.toString() + "점  /",
-            overallCSSRates: dataRatesCSS.toString() + "%",
-            overallCSSComments: data.CSS.comments,
+            overallCSSComments: data.CSS.description,
 
             KOSSSFSignals: charts.chartSignalsKOSSSF,
             KOSSSFCompensation: charts.chartPointsCompensation,
@@ -546,86 +532,85 @@ async function generateFile(data: Data, charts: any) {
             KOSSSFSystem: charts.chartPointsSystem,
             KOSSSFRelationship: charts.chartPointsRelationship,
             KOSSSFByYear: charts.chartByYearKOSSSF,
-            KOSSSFCommentDetails: data.KOSSSF.commentDetails,
+            KOSSSFCommentDetails: data.KOSS.total.details,
 
-            KOSSSFCompensationPoints: dataKosssfCompensation[0].toString() + "점  /",
-            KOSSSFCompensationRates: dataKosssfCompensation[1] + "%",
-            KOSSSFJobInstabilityPoints: dataKosssfJobInstability[0].toString() + "점  /",
-            KOSSSFJobInstabilityRates: dataKosssfJobInstability[1] +"%",
-            KOSSSFRequirementsPoints: dataKosssfRequirements[0].toString() + "점  /",
-            KOSSSFRequirementsRates: dataKosssfRequirements[1] +"%",
-            KOSSSFCulturePoints: dataKosssfCulture[0].toString() + "점  /",
-            KOSSSFCultureRates: dataKosssfCulture[1] +"%",
-            KOSSSFAutonomyPoints: dataKosssfAutonomy[0].toString() + "점  /",
-            KOSSSFAutonomyRates: dataKosssfAutonomy[1] +"%",
-            KOSSSFSystemPoints: dataKosssfSystem[0].toString() + "점  /",
-            KOSSSFSystemRates: dataKosssfSystem[1] +"%",
-            KOSSSFRelationshipPoints: dataKosssfRelationship[0].toString() + "점  /",
-            KOSSSFRelationshipRates: dataKosssfRelationship[1] +"%",
+            KOSSSFCompensationPoints: dataKosssfCompensation.score.toString() + "점  /",
+            KOSSSFCompensationRates: dataKosssfCompensation.distribution + "%",
+            KOSSSFJobInstabilityPoints: dataKosssfJobInstability.score.toString() + "점  /",
+            KOSSSFJobInstabilityRates: dataKosssfJobInstability.distribution +"%",
+            KOSSSFRequirementsPoints: dataKosssfRequirements.score.toString() + "점  /",
+            KOSSSFRequirementsRates: dataKosssfRequirements.distribution +"%",
+            KOSSSFCulturePoints: dataKosssfCulture.score.toString() + "점  /",
+            KOSSSFCultureRates: dataKosssfCulture.distribution +"%",
+            KOSSSFAutonomyPoints: dataKosssfAutonomy.score.toString() + "점  /",
+            KOSSSFAutonomyRates: dataKosssfAutonomy.distribution +"%",
+            KOSSSFSystemPoints: dataKosssfSystem.score.toString() + "점  /",
+            KOSSSFSystemRates: dataKosssfSystem.distribution +"%",
+            KOSSSFRelationshipPoints: dataKosssfRelationship.score.toString() + "점  /",
+            KOSSSFRelationshipRates: dataKosssfRelationship.distribution +"%",
 
             PHQ9Signals: charts.chartSignalsPHQ9,
-            PHQ9SignalTexts: data.PHQ9.signalTexts,
+            PHQ9SignalTexts: data.PHQ9.result,
             PHQ9Rates: dataRatesPHQ9.toString() + "%",
             PHQ9RateBar: charts.chartRateBarPHQ9,
-            PHQ9Comments: data.PHQ9.comments,
-            PHQ9Requirements: data.PHQ9.requirements,
-            PHQ9RequirementTexts: data.PHQ9.requirementTexts,
+            PHQ9Comments: data.PHQ9.description,
+            PHQ9Requirements: data.PHQ9.guidance,
+            PHQ9RequirementTexts: data.PHQ9.advice,
             PHQ9ByYear: charts.chartByYearPHQ9,
-            PHQ9CommentDetails: data.PHQ9.commentDetails,
+            PHQ9CommentDetails: data.PHQ9.details,
 
             GAD7Signals: charts.chartSignalsGAD7,
-            GAD7SignalTexts: data.GAD7.signalTexts,
+            GAD7SignalTexts: data.GAD7.result,
             GAD7Rates: dataRatesGAD7.toString() + "%",
             GAD7RateBar: charts.chartRateBarGAD7,
-            GAD7Comments: data.GAD7.comments,
-            GAD7Requirements: data.GAD7.requirements,
-            GAD7RequirementTexts: data.GAD7.requirementTexts,
+            GAD7Comments: data.GAD7.description,
+            GAD7Requirements: data.GAD7.guidance,
+            GAD7RequirementTexts: data.GAD7.advice,
             GAD7ByYear: charts.chartByYearGAD7,
-            GAD7CommentDetails: data.GAD7.commentDetails,
+            GAD7CommentDetails: data.GAD7.details,
 
             ADNM4Signals: charts.chartSignalsADNM4,
-            ADNM4SignalTexts: data.ADNM4.signalTexts,
+            ADNM4SignalTexts: data.ADNM4.result,
             ADNM4Rates: dataRatesADNM4.toString() + "%",
             ADNM4RateBar: charts.chartRateBarADNM4,
-            ADNM4Comments: data.ADNM4.comments,
-            ADNM4Requirements: data.ADNM4.requirements,
-            ADNM4RequirementTexts: data.ADNM4.requirementTexts,
+            ADNM4Comments: data.ADNM4.description,
+            ADNM4Requirements: data.ADNM4.guidance,
+            ADNM4RequirementTexts: data.ADNM4.advice,
             ADNM4ByYear: charts.chartByYearADNM4,
-            ADNM4CommentDetails: data.ADNM4.commentDetails,
+            ADNM4CommentDetails: data.ADNM4.details,
 
             PCPTSD5Signals: charts.chartSignalsPCPTSD5,
-            PCPTSD5SignalTexts: data.PCPTSD5.signalTexts,
+            PCPTSD5SignalTexts: data.PCPTSD5.result,
             PCPTSD5Rates: dataRatesPCPTSD5.toString() + "%",
             PCPTSD5RateBar: charts.chartRateBarPCPTSD5,
-            PCPTSD5Comments: data.PCPTSD5.comments,
-            PCPTSD5Requirements: data.PCPTSD5.requirements,
-            PCPTSD5RequirementTexts: data.PCPTSD5.requirementTexts,
+            PCPTSD5Comments: data.PCPTSD5.description,
+            PCPTSD5Requirements: data.PCPTSD5.guidance,
+            PCPTSD5RequirementTexts: data.PCPTSD5.advice,
             PCPTSD5ByYear: charts.chartByYearPCPTSD5,
-            PCPTSD5CommentDetails: data.PCPTSD5.commentDetails,
+            PCPTSD5CommentDetails: data.PCPTSD5.details,
 
             ISISignals: charts.chartSignalsISI,
-            ISISignalTexts: data.ISI.signalTexts,
+            ISISignalTexts: data.ISI.result,
             ISIRates: dataRatesISI.toString() + "%",
             ISIRateBar: charts.chartRateBarISI,
-            ISIComments: data.ISI.comments,
-            ISIRequirements: data.ISI.requirements,
-            ISIRequirementTexts: data.ISI.requirementTexts,
+            ISIComments: data.ISI.description,
+            ISIRequirements: data.ISI.guidance,
+            ISIRequirementTexts: data.ISI.advice,
             ISIByYear: charts.chartByYearISI,
-            ISICommentDetails: data.ISI.commentDetails,
+            ISICommentDetails: data.ISI.details,
 
             CSSSignals: charts.chartSignalsCSS,
-            CSSSignalTexts: data.CSS.signalTexts,
-            CSSRateBar: charts.chartRateBarCSS,
-            CSSComments: data.CSS.comments,
-            CSSRequirements: data.CSS.requirements,
-            CSSRequirementTexts: data.CSS.requirementTexts,
-            CSSCommentDetails: data.CSS.commentDetails,
+            CSSSignalTexts: data.CSS.result,
+            CSSComments: data.CSS.description,
+            CSSRequirements: data.CSS.guidance,
+            CSSRequirementTexts: data.CSS.advice,
+            CSSCommentDetails: data.CSS.details,
         }
     ];
 
     // jpg 경로 생성 준비
     // 센터코드 => 센터명 변경
-    const centerCode = data.pathInfo.centerCode
+    const centerCode = data.info.centerCode
     let centerName;
     if (centerCode == 111) {
         centerName = "his_jno";
@@ -646,8 +631,8 @@ async function generateFile(data: Data, charts: any) {
         return 0;
     };
 
-    const examDate = data.pathInfo.examDate.replace(/-/g, "");
-    const reservationNumber = data.pathInfo.reservationNumber;
+    const examDate = data.info.examDate.replace(/-/g, "");
+    const reservationNumber = data.info.reservationNumber;
 
     // pdf 생성 경로에 따른 디렉토리 생성 + pdf 파일명 설정
     // const pdfPath = await makeDir(config.get('PDF_PATH'));

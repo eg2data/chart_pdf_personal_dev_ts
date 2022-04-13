@@ -19,7 +19,7 @@
     "overallPCPTSD5Signals":{"type":"image","position":{"x":159.5,"y":189.75},"width":36,"height":9},
     "overallISISignalTexts":{"type":"text","position":{"x":77.25,"y":234.75},"width":20,"height":5,"alignment":"left","fontSize":8,"characterSpacing":0,"lineHeight":1},
     "overallISISignals":{"type":"image","position":{"x":62.25,"y":239.5},"width":36,"height":9},
-
+    "overallCSSSignalTexts":{"type":"text","position":{"x":166,"y":239.75},"width":20,"height":5,"alignment":"left","fontSize":8,"characterSpacing":0,"lineHeight":1},
 
     "overallKOSSSFPoints":{"type":"text","position":{"x":30,"y":109.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
     "overallKOSSSFRates":{"type":"text","position":{"x":46,"y":109.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
@@ -39,8 +39,7 @@
     "overallISIPoints":{"type":"text","position":{"x":30,"y":257.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
     "overallISIRates":{"type":"text","position":{"x":46,"y":257.25},"width":20,"height":5,"alignment":"left","fontSize":10,"characterSpacing":0,"lineHeight":1,"fontColor":"#808080"},
     "overallISIComments":{"type":"text","position":{"x":14.5,"y":263.25},"width":50,"height":6,"alignment":"left","fontSize":7,"characterSpacing":0,"lineHeight":1.25},
-
-    "overallCSSComments":{"type":"text","position":{"x":112,"y":263.25},"width":50,"height":6,"alignment":"left","fontSize":7,"characterSpacing":0,"lineHeight":1.25}
+    "overallCSSComments":{"type":"text","position":{"x":112,"y":261},"width":50,"height":6,"alignment":"left","fontSize":7,"characterSpacing":0,"lineHeight":1.25}
   },
   {
     "KOSSSFSignals":{"type":"image","position":{"x":159,"y":25.5},"width":42,"height":10},
@@ -117,6 +116,7 @@
     "ISIByYear":{"type":"image","position":{"x":145,"y":70.5},"width":54,"height":40},
     "ISICommentDetails":{"type":"text","position":{"x":13.75,"y":131},"width":180,"height":24.11,"alignment":"left","fontSize":11,"characterSpacing":0.1,"lineHeight":1.5,"fontColor":"#808080"},
 
+    "CSSSignalTexts":{"type":"text","position":{"x":100,"y":213.5},"width":20,"height":6,"alignment":"center","fontSize":9.5,"characterSpacing":0,"lineHeight":1.5,"fontColor":"#ffffff","backgroundColor":"#FFE08C"},
     "CSSRates":{"type":"text","position":{"x":77,"y":212.5},"width":30,"height":9,"alignment":"left","fontSize":16,"characterSpacing":0,"lineHeight":1,"fontColor":"#ff0000"},
     "CSSRateBar":{"type":"image","position":{"x":13.25,"y":225},"width":107.5,"height":5.5},
     "CSSComments":{"type":"text","position":{"x":15.5,"y":230.75},"width":106.5,"height":8.58,"alignment":"left","fontSize":12,"characterSpacing":0,"lineHeight":1.25},
