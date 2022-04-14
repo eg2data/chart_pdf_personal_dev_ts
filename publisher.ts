@@ -21,7 +21,6 @@ const data_0 = {
         "total": {
             "distribution" : "상위 25",
             "score" : 55,
-            "scoreMean" : 12.4,
             "level": 24,
             "result": "약간 심함",
             "byYear": 24,
@@ -111,7 +110,6 @@ const data_1 =
             "total": {
                 "distribution" : "상위 25",
                 "score" : 55,
-                "scoreMean" : 12.4,
                 "level": 24,
                 "result": "약간 심함",
                 "byYear": 24,
@@ -201,7 +199,6 @@ const data_2 =
             "total": {
                 "distribution" : "상위 25",
                 "score" : 55,
-                "scoreMean" : 12.4,
                 "level": 24,
                 "result": "약간 심함",
                 "byYear": 24,
@@ -291,7 +288,6 @@ const data_3 =
             "total": {
                 "distribution" : "상위 25",
                 "score" : 55,
-                "scoreMean" : 12.4,
                 "level": 24,
                 "result": "약간 심함",
                 "byYear": 24,
@@ -381,7 +377,6 @@ const data_4 =
             "total": {
                 "distribution" : "상위 25",
                 "score" : 55,
-                "scoreMean" : 12.4,
                 "level": 24,
                 "result": "약간 심함",
                 "byYear": 24,
@@ -471,7 +466,6 @@ const data_5 =
             "total": {
                 "distribution" : "상위 25",
                 "score" : 55,
-                "scoreMean" : 12.4,
                 "level": 24,
                 "result": "약간 심함",
                 "byYear": 24,
@@ -561,7 +555,6 @@ const data_6 =
             "total": {
                 "distribution" : "상위 25",
                 "score" : 55,
-                "scoreMean" : 12.4,
                 "level": 24,
                 "result": "약간 심함",
                 "byYear": 24,
@@ -651,7 +644,6 @@ const data_7 =
             "total": {
                 "distribution" : "",
                 "score" : null,
-                "scoreMean" : null,
                 "level": null,
                 "result": "",
                 "byYear": null,
