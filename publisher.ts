@@ -727,8 +727,12 @@ const data = [
 
 
 // Step 1: create connection
+console.log("startingPoint-publisher")
+//amqp.connect('amqp://tess_report:KHg4sZxTtjy3Aq4K@127.0.0.1:5672/kmi', (connectionError, connection) => {
 amqp.connect('amqp://localhost', (connectionError: any, connection: any) => { // subscriber는 타입을 요구하지 않던데 음... 일단 any 처리
+    console.log("tryConnection-publisher")
     if(connectionError) {
+        console.log("connectionError-publisher")
         throw connectionError;
     }
     // Step 2: create channel
@@ -749,7 +753,7 @@ amqp.connect('amqp://localhost', (connectionError: any, connection: any) => { //
             });
             console.log(`[x] Sent data_${i} successfully.`)
         }
-        // const message = JSON.stringify(data_6)
+        // const message = JSON.stringify(data_2)
         // channel.sendToQueue(queueName, Buffer.from(message), {
         //     persistent: true
         // });

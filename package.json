@@ -4,7 +4,7 @@
   "description": "",
   "main": "",
   "scripts": {
-    "pm2-start": "pm2 start ecosystem.config.ts"
+    "pm2-start": "pm2 start ecosystem.config.js"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +24,8 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "pm2": "^5.2.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.17.2",

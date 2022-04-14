@@ -1,8 +1,10 @@
 import amqp from 'amqplib/callback_api.js';
 import {saveMessage, generateChart, generateFile } from "./generateChart";
 import config from "config";
-import {ConsumeMessage, Message} from "amqplib";
+import {Message} from "amqplib";
 
+// Step 1: create connection
+//amqp.connect('amqp://tess_report:KHg4sZxTtjy3Aq4K@127.0.0.1:5672/kmi', (connectionError, connection) => {
 amqp.connect('amqp://localhost', (connectionError, connection) => {
     console.log("tryConnection-subscriber")
     if(connectionError) {

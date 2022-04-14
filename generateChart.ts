@@ -44,7 +44,6 @@ type Data = {
         "total": {
             "distribution" : string,
             "score" : number,
-            "scoreMean" : number,
             "level": number,
             "result": string,
             "byYear": number,
@@ -296,8 +295,8 @@ class ConfigByYear implements ChartConfiguration {
     } as any;
 };
 
-async function saveMessage(message: any): Promise<Data> {
-    const data = JSON.parse(message)
+async function saveMessage(message: Buffer): Promise<Data> {
+    const data = JSON.parse(message.toString())
 
     const centerCode = data.info.centerCode;
     const examDate = data.info.examDate.replace(/-/g, "");
@@ -319,7 +318,6 @@ async function generateChart(data: Data) {
     // 그러면 generateChart, generatePdf 어디서건 걍 바로 쓸 수 있는 장점도 있고. 음.
     // data null check - 이거 그냥.. 호출하는 함수로 만들어둘까? 호출만하면 걍 만들어지게?
 
-    // data가 들어오자마자, null이 있다면 치환해버려
     const dataSignalsKOSSSF = data.KOSS.total.level == null ? -1 : data.KOSS.total.level;
     const dataSignalsPHQ9 = data.PHQ9.level == null ? -1 : data.PHQ9.level;
     const dataSignalsGAD7 = data.GAD7.level == null ? -1 : data.GAD7.level;
@@ -349,7 +347,6 @@ async function generateChart(data: Data) {
     const dataKosssfSystem = data.KOSS.system.score == null ? {"distribution": "0", "score": 0} : data.KOSS.system;
     const dataKosssfRelationship = data.KOSS.relationship.score == null ? {"distribution": "0", "score": 0} : data.KOSS.relationship;
 
-    const dataMeansKOSSSF = data.KOSS.total.scoreMean == null ? 0 : data.KOSS.total.scoreMean;
     const dataPointsKOSSSF = data.KOSS.total.score == null ? 0 : data.KOSS.total.score;
     const dataPointsPHQ9 = data.PHQ9.score == null ? 0 : data.PHQ9.score;
     const dataPointsGAD7 = data.GAD7.score == null ? 0 : data.GAD7.score;
@@ -426,6 +423,7 @@ async function generateChart(data: Data) {
     // 일단 변수명 조정부터 => 같으면 하나만 쓰면 되는 거 이용해서. 걍 바로 때린다.
     // 아래 이건.. 어떤 타입이라고 할 수 있을까? 만들어야할까? + 각각이 string으로 잡히는게 지금.. 맞는 것인가....
     // Promisd<string>[] 이거 같긴하다. promise들의 집합.
+
     return {
         chartSignalsKOSSSF,
         chartSignalsPHQ9, chartSignalsGAD7, chartSignalsADNM4, chartSignalsPCPTSD5, chartSignalsISI,
@@ -468,7 +466,6 @@ async function generateFile(data: Data, charts: any) {
     const dataKosssfSystem = data.KOSS.system.score == null ? {"distribution": "0", "score": 0} : data.KOSS.system;
     const dataKosssfRelationship = data.KOSS.relationship.score == null ? {"distribution": "0", "score": 0} : data.KOSS.relationship;
 
-    const dataMeansKOSSSF = data.KOSS.total.scoreMean == null ? 0 : data.KOSS.total.scoreMean;
     const dataPointsKOSSSF = data.KOSS.total.score == null ? 0 : data.KOSS.total.score;
     const dataPointsPHQ9 = data.PHQ9.score == null ? 0 : data.PHQ9.score;
     const dataPointsGAD7 = data.GAD7.score == null ? 0 : data.GAD7.score;
@@ -487,7 +484,6 @@ async function generateFile(data: Data, charts: any) {
             overallKOSSSFSignals: charts.chartSignalsKOSSSF,
             overallKOSSSFPoints: dataPointsKOSSSF.toString() + "점  /",
             overallKOSSSFRates: dataRatesKOSSSF.toString() + "%",
-            overallKOSSSFMeans: dataMeansKOSSSF.toString() + "점",
 
             overallPHQ9SignalTexts: ": " + data.PHQ9.result,
             overallPHQ9Signals: charts.chartSignalsPHQ9,
