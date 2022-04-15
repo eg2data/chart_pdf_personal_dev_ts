@@ -1,9 +1,0 @@
-{
-  "apps": [
-    {
-      "name": "chart_pdf_personal_dev_v2",
-      "script": "ts-node ./subscriber.ts",
-      "exec_mode": "cluster",
-    }
-  ]
-}
